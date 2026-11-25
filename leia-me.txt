@@ -1,0 +1,171 @@
+=== Rebel Studios Brazilian Checkout Fields for WooCommerce ===
+Contributors: rebelstudios
+Tags: cpf, cnpj, cep, brasil, validar cpf
+Requires at least: 6.5
+Tested up to: 7.1
+Requires PHP: 7.4
+Stable tag: 1.0.6
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Campos brasileiros no checkout do WooCommerce, com validação de verdade, busca por CEP e CNPJ, e os dados no pedido, nos e-mails e na nota fiscal.
+
+== Description ==
+
+**Checkout Brasil** adiciona ao WooCommerce os campos que uma loja brasileira precisa — CPF, CNPJ, Razão Social, RG, Inscrição Estadual, número e bairro — e faz três coisas que normalmente faltam:
+
+1. **Valida de verdade.** CPF e CNPJ são conferidos pelos dígitos verificadores oficiais, no navegador *e* no servidor. Um documento inválido não entra no pedido.
+2. **Preenche sozinho.** Digite o CEP e a rua, o bairro, a cidade e o estado aparecem. Digite o CNPJ e a Razão Social e o endereço da empresa vêm junto.
+3. **Leva os dados adiante.** CPF, CNPJ e Razão Social aparecem no pedido, no painel, nos e-mails e na API — prontos para a nota fiscal. Coletar o documento e não conseguir usá-lo depois é o problema que este plugin existe para resolver.
+
+= Cada campo é opcional =
+
+Todo campo tem três estados: **Desativado**, **Opcional** ou **Obrigatório**. Uma loja que vende produtos digitais não precisa pedir CPF; uma que fatura para empresas precisa de CNPJ e Razão Social e mais nada. Você decide, sem tocar em código.
+
+= Funciona nos dois checkouts =
+
+Compatível com o **checkout clássico** e com o **checkout em blocos** (React) do WooCommerce, além do **HPOS** (armazenamento de pedidos de alta performance). Os dados são gravados do mesmo jeito nos dois, então qualquer integração de nota fiscal lê um formato só.
+
+= Privacidade e estabilidade =
+
+As consultas de CEP e CNPJ saem **do seu servidor**, não do navegador do cliente, e ficam em cache. Se o serviço de consulta estiver fora do ar, o cliente simplesmente digita o endereço — **a compra nunca é bloqueada** por causa de uma API de terceiros.
+
+Consultas usam [ViaCEP](https://viacep.com.br/) (CEP) e [BrasilAPI](https://brasilapi.com.br/) (CNPJ), ambos públicos e gratuitos. Nenhum dado de cliente é enviado para os autores deste plugin.
+
+= Inscrição Estadual e o CSV do contador (complemento pago) =
+
+Este plugin **guarda** a Inscrição Estadual, mas não confere se ela é válida. O [Checkout Brasil Pro](https://rebelstudiossoftware.com/checkout-brasil-pro.html) confere, nas **27 unidades federativas**, antes do pagamento, e exporta um CSV dos pedidos com CPF, CNPJ, Razão Social, IE, RG e o endereço completo — com a coluna **IE válida**, para o contador ver quais pedidos vão ser recusados **antes** de tentar emitir as notas.
+
+Ele **não emite NF-e** — isso exige certificado digital e integração com a SEFAZ, e é outro produto. $29 por ano ou $87 uma vez por uma licença vitalícia, com 7 dias de garantia. O plugin gratuito não expira nem fica limitado por causa dele.
+
+== Installation ==
+
+1. Instale e ative o plugin.
+2. Vá em **WooCommerce → Checkout Brasil**.
+3. Escolha, para cada campo, se ele fica desativado, opcional ou obrigatório.
+
+== Frequently Asked Questions ==
+
+= Os campos não aparecem no meu checkout. =
+
+Quase sempre é o tipo de checkout. Se a sua loja usa o **checkout em blocos** e o
+plugin antigo só suportava o clássico, nenhum campo aparece — e é exatamente por
+isso que este plugin existe.
+
+Vá em **WooCommerce → Checkout Brasil** e olhe o painel de **Diagnóstico** no fim
+da página. Ele diz qual checkout a sua loja está usando, se os campos estão
+ativos, e se algum outro plugin está disputando os mesmos campos. Copie esse
+relatório antes de abrir um chamado.
+
+= Posso desativar o CPF? =
+
+Sim. Todo campo tem três estados — Desativado, Opcional, Obrigatório — em
+**WooCommerce → Checkout Brasil**. Nada é forçado, inclusive o CPF.
+
+= Os campos aparecem duas vezes. =
+
+Você tem dois plugins de campos ativos ao mesmo tempo. O painel de Diagnóstico
+detecta os mais comuns (Brazilian Market on WooCommerce, Checkout Field Editor,
+Flexible Checkout Fields). Desative um dos dois.
+
+= Estou migrando do "Brazilian Market on WooCommerce". Os dados antigos somem? =
+
+Os pedidos antigos continuam intactos — este plugin não apaga nada. Mas ele grava
+em campos próprios (`_billing_rsbcf_cpf`), diferentes dos do plugin antigo
+(`_billing_cpf`), justamente para não haver conflito. Pedidos novos usam os
+campos novos; pedidos antigos seguem legíveis pelo plugin antigo enquanto ele
+estiver instalado.
+
+= A consulta de CEP parou de funcionar. Meus clientes conseguem comprar? =
+
+Sim. Uma consulta que falha é ignorada e o cliente digita o endereço normalmente.
+**A compra nunca é bloqueada** por causa de uma API de terceiros. O painel de
+Diagnóstico mostra se o ViaCEP e a BrasilAPI estão respondendo agora.
+
+= Os dados de CPF/CNPJ aparecem na nota fiscal? =
+
+Ficam gravados no pedido (`_billing_rsbcf_cpf`, `_billing_rsbcf_cnpj`,
+`_billing_rsbcf_company_legal_name`), aparecem no painel, nos e-mails e na API —
+que é de onde as integrações de NF-e leem. Se a sua integração espera outro nome
+de campo, o filtro `checkout_brasil_order_values` permite remapear.
+
+= Funciona com HPOS? =
+
+Sim, declarado compatível. Os dados são gravados pela API de pedidos do
+WooCommerce, então funcionam igual com HPOS ligado ou desligado.
+
+= Funciona com PagSeguro / Mercado Pago / PagBank? =
+
+Os campos usam nomes próprios (`billing_rsbcf_*`) em vez dos nomes genéricos que
+vários plugins disputam, que é a causa mais comum de conflito com gateways. Se
+mesmo assim houver conflito, mande o relatório do Diagnóstico — com ele dá para
+responder de primeira.
+
+= O CPF é validado de verdade? =
+
+Sim, pelos dígitos verificadores oficiais, no navegador e **de novo no servidor**.
+Documento inválido não entra no pedido. Sequências repetidas (111.111.111-11)
+são recusadas.
+
+= Vocês recebem os dados dos meus clientes? =
+
+Não. As consultas saem do seu servidor direto para o ViaCEP e a BrasilAPI, e as
+respostas ficam em cache no seu site. Não temos servidor no meio.
+
+== Screenshots ==
+
+1. Campos no checkout com máscara aplicada, validação de CPF e endereço preenchido a partir do CEP.
+2. Configurações: cada campo pode ser desativado, opcional ou obrigatório.
+3. Painel de diagnóstico — versões, tipo de checkout, HPOS, e se as consultas estão respondendo.
+
+== Changelog ==
+
+= 1.0.5 =
+* Correção: no checkout clássico, letras digitadas logo depois de mudar o CEP podiam se perder, e o pedido gravava "Cção" no lugar de "Consolação". O WooCommerce tira o foco de todos os campos quando a atualização do resumo do pedido volta com um aviso; em algumas lojas com links permanentes simples, um aviso antigo de "adicionado ao carrinho" volta em toda atualização. Agora o campo em que o cliente está digitando continua com o foco. Isso acontece também sem este plugin, nos campos do próprio WooCommerce, e eles ficam protegidos também.
+* Correção: com a escolha entre Pessoa Física e Jurídica ativa, um CNPJ obrigatório aparecia como "(opcional)" no checkout clássico, embora uma empresa não conseguisse finalizar sem ele. Agora tem a marca de obrigatório. No WooCommerce 8.9 a 9.8, o checkout em blocos mostra "CNPJ (obrigatório para PJ)" (CPF: "obrigatório para PF").
+
+= 1.0.4 =
+* Correção: no checkout clássico, um cliente que já comprou antes e entregou no endereço de cobrança recebia, no endereço de entrega do pedido, o número e o bairro do endereço de entrega anterior, e a etiqueta apontava para a casa errada.
+* Correção: no WooCommerce 8.9 a 9.8, o checkout em blocos com a escolha entre Pessoa Física e Jurídica não mostrava CPF, CNPJ nem Razão Social, e com um documento obrigatório recusava todos os compradores. Nessas versões os dois documentos aparecem e o obrigatório é conferido, conforme o tipo escolhido, quando o pedido é feito. Do WooCommerce 9.9 em diante nada muda.
+* Correção: no checkout clássico, uma loja que pede só documentos de empresa (CPF desativado, sem a escolha entre Pessoa Física e Jurídica) não exigia o CNPJ obrigatório e aceitava um CNPJ com dígito verificador errado. Agora os dois são recusados, e o campo aparece como obrigatório.
+* Novo: "Exportar dados pessoais" do WordPress agora inclui o CPF, o CNPJ, o RG e os outros campos deste plugin, e "Apagar dados pessoais" os remove do perfil do cliente e, quando o WooCommerce está configurado para remover dados de pedidos a pedido, dos pedidos dele.
+* Correção: buscar um CPF ou CNPJ (só os números) em WooCommerce > Pedidos encontra o pedido nas lojas com HPOS, o armazenamento padrão do WooCommerce. Só funcionava no armazenamento antigo, por posts.
+* Correção: no checkout clássico, um valor enviado para um campo que a loja desativou não é mais gravado no pedido.
+* Correção: o Gerente da loja (Shop Manager) consegue salvar a tela de configurações. O WordPress recusava o salvamento para quem não tinha a permissão de administrador.
+* Correção: Número ou Bairro obrigatório em branco mostra um erro no checkout clássico, não dois.
+* Correção: o painel de Diagnóstico agora reconhece o Checkout Field Editor (procurava o nome de arquivo errado) e a versão anterior deste próprio plugin, vendida como "Checkout Brasil", que duplica todos os campos quando as duas estão ativas.
+* Mudança: o campo em consulta (CEP ou CNPJ) fica esmaecido até a resposta chegar, e não por 0,9 segundo fixo. O indicador giratório que deveria aparecer nunca podia ser exibido num campo de texto.
+
+= 1.0.3 =
+* Novo nome, "Rebel Studios Brazilian Checkout Fields for WooCommerce", e um prefixo de código próprio do plugin, para a publicação no WordPress.org. Nenhuma mudança nas funções.
+* Os serviços externos (ViaCEP e BrasilAPI) agora estão documentados por completo no readme.
+
+= 1.0.2 =
+* Correção: o preenchimento por CEP agora define o estado. Ele preenchia rua, bairro e cidade, mas deixava o estado que o WooCommerce pré-seleciona (o da loja): um CEP do Rio numa loja de São Paulo continuava "São Paulo".
+* Correção: o preenchimento por CNPJ só usa o endereço cadastrado inteiro, e só enquanto o cliente não começou a digitar um endereço, então não mistura mais a rua da empresa com o CEP e o estado do cliente.
+
+= 1.0.1 =
+* Correção: no checkout em blocos, o CNPJ digitado dígito a dígito saía embaralhado pela máscara.
+* Correção: o preenchimento automático por CEP e CNPJ agora funciona no checkout em blocos (antes só no clássico).
+* Novo no checkout em blocos: escolha entre Pessoa Física e Pessoa Jurídica, com CPF ou CNPJ e Razão Social conforme o tipo.
+* Novo no checkout em blocos: número e bairro também no endereço de entrega, não só no de cobrança.
+* Correção: um CPF digitado e depois escondido ao trocar para Pessoa Jurídica não fica mais gravado no pedido (nos dois checkouts).
+* Correção: os documentos apareciam duas vezes na confirmação e nos e-mails de pedidos feitos pelo checkout em blocos.
+
+= 1.0.0 =
+* Versão inicial: CPF, CNPJ, Razão Social, RG, IE, número, bairro e celular.
+* Validação por dígito verificador no navegador e no servidor.
+* Busca de endereço por CEP (ViaCEP) e de empresa por CNPJ (BrasilAPI), via servidor e com cache.
+* Suporte a checkout clássico, checkout em blocos e HPOS.
+* Dados no pedido, no painel, nos e-mails e na API.
+
+== Upgrade Notice ==
+
+= 1.0.5 =
+O checkout clássico não perde mais letras digitadas logo depois do CEP em algumas lojas com links permanentes simples, e o CNPJ obrigatório para empresas aparece como obrigatório.
+
+= 1.0.4 =
+Corrige o número errado em alguns endereços de entrega (checkout clássico), os documentos que sumiam do checkout em blocos no WooCommerce 8.9 a 9.8 e o CNPJ obrigatório que não era exigido; inclui exportação e exclusão de dados pessoais.
+
+= 1.0.0 =
+Versão inicial.

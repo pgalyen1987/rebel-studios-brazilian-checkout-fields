@@ -1,0 +1,31 @@
+/* Field state feedback. Deliberately minimal: the incumbent's reviewers report
+   "quebrar o css" and "campos desalinhados", both of which come from a plugin
+   imposing its own layout on a theme it has never seen. This styles only what
+   this plugin owns -- validity state and the lookup spinner -- and inherits
+   everything else from the theme. */
+
+.cb-field-invalid input {
+	border-color: #cc1818 !important;
+}
+
+.cb-field-valid input {
+	border-color: #1a7f37 !important;
+}
+
+.cb-field-error {
+	display: block;
+	margin-top: .25em;
+	font-size: .85em;
+	color: #cc1818;
+}
+
+/* While a CEP or CNPJ lookup is in flight. The field only dims: a spinner drawn with ::after
+   never showed, because an <input> cannot have pseudo-elements. */
+.cb-looking-up {
+	opacity: .7;
+}
+
+/* Hidden by person type. Uses visibility of the whole row so labels go too. */
+.cb-hidden {
+	display: none !important;
+}
